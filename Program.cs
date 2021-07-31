@@ -14,33 +14,121 @@ namespace DexGetHashCode_Equals
     {
         static void Main()
         {
-            Person pers1 = new Person("Иванов Иван Иванович", "07.04.1993", "Бендеры", 123456);
-            Person pers2 = new Person("Пертов Сергей Васильевич", "04.09.1992", "Тирасполь", 654321);
-            Person pers3 = new Person("Семенов Иван Николаевич", "05.08.1995", "Рыбница", 234123);
-
-            Dictionary<Person, string> workPlace = new Dictionary<Person, string>
+            Dictionary<Person, string> workPlace = new Dictionary<Person, string>()
             {
-                { pers1, "ООО РОГА И КОПЫТА" },
-                { pers2, "ООО КАРАНДАШ" },
-                { pers3, "ООО МЕЧТА" }
-            };
-
-            //Console.WriteLine("Введите данные в формате: Фамилия Имя Отчество, дд.мм.гггг, Город, Номер паспорта");
-            //string search = Console.ReadLine();
-            bool flag = true;
-            foreach (var item in workPlace)
-            {
-                if (item.Key.Equals("Семенов Иван Николаевич, 05.08.1995, Рыбница, 234123"))
                 {
-                    Console.WriteLine(item.Value);
-                    flag = false;
-                    break;
+                    new Person() 
+                    { 
+                        Name = "Иванов Иван Иванович", 
+                        BirthDate = new DateTime(1993,04,07), 
+                        BirthPlace = "Бендеры", 
+                        PassportNumber = "К 123456" 
+                    }, "ООО РОГА И КОПЫТА" 
+                },
+                {
+                    new Person() 
+                    { 
+                        Name = "Пертов Сергей Васильевич", 
+                        BirthDate = new DateTime(1992,09,04), 
+                        BirthPlace = "Тирасполь", 
+                        PassportNumber = "С 654321" 
+                    }, "ООО КАРАНДАШ" 
+                },
+                {
+                    new Person() 
+                    { 
+                        Name = "Семенов Иван Николаевич", 
+                        BirthDate = new DateTime(1995,08,05), 
+                        BirthPlace = "Рыбница", 
+                        PassportNumber = "В 234123" 
+                    }, "ООО МЕЧТА" 
+                },
+                {
+                    new Person()
+                    {
+                        Name = "d",
+                        BirthDate = new DateTime(1000,10,10),
+                        BirthPlace = "d",
+                        PassportNumber = "d"
+                    }, "OOO LG"
+                },
+            };
+            
+            bool flagInput = true;
+            while (flagInput)
+            {
+                Console.WriteLine("Введите данные физического лица.");
+                Person person = Input();
+                bool flagEquals = true;
+                foreach (var item in workPlace)
+                {
+                    if (item.Key.GetHashCode() == person.GetHashCode())
+                    {
+                        if (item.Key.Equals(person))
+                        {
+                            Console.WriteLine($"Текущее место работы: {item.Value}\n");
+                            Console.Write("Если вы хотите изменить место работы нажмите (y), иначе любую другую клавишу: ");
+                            var inputKey = Console.ReadKey();
+                            Console.WriteLine();
+                            if (inputKey.Key == ConsoleKey.Y)
+                            {
+                                Console.Write("Введите новое место работы: ");
+                                string tmp = Console.ReadLine();
+                                workPlace[person] = tmp;
+                                Console.WriteLine($"Место работы изменено на: {workPlace[person]}");
+                                flagEquals = false;
+                                break;
+                            }
+                            else
+                            {
+                                flagEquals = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (flagEquals)
+                {
+                    Console.WriteLine("В справочнике нет информации о данном лице\n");
+                }
+
+                Console.Write("Завершить поиск в справочнике? (y/n): ");
+                while (true)
+                {
+                    var inputKey = Console.ReadKey();
+                    Console.WriteLine("\n");
+                    if (inputKey.Key == ConsoleKey.Y)
+                    {
+                        flagInput = false;
+                        break;
+                    }
+                    else if (inputKey.Key == ConsoleKey.N)
+                    {
+                        break;
+                    }
+                    else if (inputKey.Key != ConsoleKey.Y && inputKey.Key != ConsoleKey.N)
+                    {
+                        Console.WriteLine("\nДля выхода из программы нажмите Y, для продолжения поиска N\n");
+                    }
                 }
             }
-            if (flag)
-            {
-                Console.WriteLine("Объект не существует или некоректно ввели данные.");
-            }
+        }
+
+        public static Person Input()
+        {
+            Person person = new Person();
+            Console.WriteLine("Введите ФИО: ");
+            person.Name = Convert.ToString(Console.ReadLine());
+            Console.WriteLine("Введите место рождения: ");
+            person.BirthPlace = Convert.ToString(Console.ReadLine());
+            Console.WriteLine("Введите номер паспорта: (Б 000000");
+            person.PassportNumber = Convert.ToString(Console.ReadLine());
+            Console.WriteLine("Введите дату рождения (yyyy.mm.dd): ");
+            if (DateTime.TryParse(Console.ReadLine(), out DateTime dateBirth))
+                person.BirthDate = dateBirth;
+            else
+                Console.WriteLine("Введена некорректная дата рождения");
+            return person;
         }
     }
 }
